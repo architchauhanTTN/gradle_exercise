@@ -1,0 +1,52 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply from: 'myTask.gradle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+
+    maven{
+        url "http://maven.petrikainulainen.net/repo"
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'org.apache.commons:commons-lang3:3.6'
+}
+
+ jar {
+    manifest {
+        attributes 'Main-Class':'com.Hello'
+    }
+}
+
+sourceSets{
+    main{
+        java{
+            srcDirs = ['src/main/java','src/main/Java2']         //Q2
+        }
+    }
+}
+
+task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {  //Q4
+    from {
+        configurations.compile.collect {it.isDirectory()? it: zipTree(it)}
+    }
+    with jar
+    manifest {
+        attributes 'Main-Class': 'com.Hello'
+    }
+}
+
+
+sourceSets {
+    main{
+        resources {
+            exclude 'file1.txt'
+        }
+    }
+}
